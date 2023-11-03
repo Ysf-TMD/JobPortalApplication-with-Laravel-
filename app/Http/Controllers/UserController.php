@@ -19,7 +19,7 @@ class UserController extends Controller
     }
     public function storeSeeker(RegistrationFormRequest $request){
 
-        User::create([
+        $user = User::create([
             "name"=>request("name"),
             "email"=>request("email"),
             "password"=> bcrypt(request("password")),
@@ -27,8 +27,14 @@ class UserController extends Controller
             'user_trial'=>now()->addWeek(),
         ]);
 
-        return redirect()->route("login")
-            ->with("successMessage","Your Account Was Created");
+        Auth::login($user);
+
+        //use this methode to send email verification
+        $user->sendEmailVerificationNotification();
+
+        //return redirect()->route("verification.notice")->with("successMessage","Your Account Was Created");
+
+        return response()->json("success");
 
     }
     public function login(){
@@ -56,13 +62,16 @@ class UserController extends Controller
     }
     public function storeEmployer(RegistrationFormRequest $request){
 
-        User::create([
+        $user=User::create([
             "name"=>request("name"),
             "email"=>request("email"),
             "password"=> bcrypt(request("password")),
             "user_type"=>self::joobPoster,
+            'user_trial'=>now()->addWeek(),
         ]);
-        return redirect()->route("login")
+        Auth::login($user);
+        $user->sendEmailVerificationNotification();
+        return redirect()->route("verification.notice")
             ->with("successMessage","Your Account Was Created");
 
     }

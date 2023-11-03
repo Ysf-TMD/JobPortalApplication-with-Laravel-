@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+//verify user account ...
+Route::get("/email/verify/{id}/{hash}",function(\Illuminate\Foundation\Auth\EmailVerificationRequest $request){
+    $request->fulfill();
+    return redirect("/login");
+})->middleware(["auth","signed"])->name("verification.verify");
 
 Route::get("/register/seeker",[\App\Http\Controllers\UserController::class,"createSeeker"])->name("create-seeker");
 Route::post("/register/seeker",[\App\Http\Controllers\UserController::class,"storeSeeker"])->name("store.seeker");
@@ -28,5 +33,10 @@ Route::post("/login" , [\App\Http\Controllers\UserController::class , "postLogin
 Route::post("/logout" , [\App\Http\Controllers\UserController::class , "logout"])->name("logout");
 // dashboard URL with authentificaiton validaiton ;
 Route::get("/dashboard",[\App\Http\Controllers\DashboardController::class ,"index"])
+    ->middleware("verified")
     ->name("dashboard")
-    ->middleware("auth");
+    ;
+
+Route::get("/verify",[\App\Http\Controllers\DashboardController::class , "verify"])->name("verification.notice");
+
+Route::get("/resend/verification/email",[\App\Http\Controllers\DashboardController::class,"resend"])->name("resend.email");

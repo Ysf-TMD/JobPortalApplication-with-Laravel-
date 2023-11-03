@@ -3,7 +3,7 @@
     <div class="container mt-5">
         Hello , {{auth()->user()->name}}
         @if(Auth::check() &&  auth()->user()->user_type == "employer")
-            <p>Your Trail will Expire on {{auth()->user()->user_trial}}</p>
+            <p>Your Trail {{now()->format("Y-m-d") > auth()->user()->user_trial ? "Was Expired on": "Will Expire on  "}} {{auth()->user()->user_trial}}</p>
         @endif
         <div class="row justify-content-center">
             <div class="col-md-3">
